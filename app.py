@@ -1,4 +1,4 @@
-import json
+
 
 import streamlit as st
 import firebase_admin
@@ -15,27 +15,11 @@ st.set_page_config(page_title="📊 Real-Time Sensor Dashboard", layout="wide")
 # Access credentials from Streamlit secrets
 firebase_creds = st.secrets["firebase_service_account"]
 
-# Convert the TOML secret into a dictionary
-cred_dict = {
-    "type": firebase_creds["type"],
-    "project_id": firebase_creds["project_id"],
-    "private_key_id": firebase_creds["private_key_id"],
-    "private_key": firebase_creds["private_key"],
-    "client_email": firebase_creds["client_email"],
-    "client_id": firebase_creds["client_id"],
-    "auth_uri": firebase_creds["auth_uri"],
-    "token_uri": firebase_creds["token_uri"],
-    "auth_provider_x509_cert_url": firebase_creds["auth_provider_x509_cert_url"],
-    "client_x509_cert_url": firebase_creds["client_x509_cert_url"],
-    "universe_domain": firebase_creds["universe_domain"]
-}
+# Directly use the credentials dictionary from Streamlit secrets to initialize Firebase
+cred = credentials.Certificate(firebase_creds)
 
-cred_json = json.dumps(cred_dict)
-# Initialize Firebase app with credentials
-cred = credentials.Certificate(json.loads(cred_json))  # Use the parsed JSON string as input
 DATABASE_URL = "https://lifealert-40baf-default-rtdb.firebaseio.com/"
 firebase_admin.initialize_app(cred, {"databaseURL": DATABASE_URL})
-
 sensor_ref = db.reference("sensorData")
 
 # **3️⃣ Data Storage (Rolling Window)**
