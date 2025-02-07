@@ -3,7 +3,6 @@ import firebase_admin
 from firebase_admin import credentials, db
 import pandas as pd
 import matplotlib.pyplot as plt
-import requests
 from collections import deque
 import time
 
@@ -11,12 +10,28 @@ import time
 st.set_page_config(page_title="📊 Real-Time Sensor Dashboard", layout="wide")
 
 # **2️⃣ Connect to Firebase**
-SERVICE_ACCOUNT_PATH = "lifealert-40baf-firebase-adminsdk-fbsvc-d247c8a09d.json"
-DATABASE_URL = "https://lifealert-40baf-default-rtdb.firebaseio.com/"
+# Access credentials from Streamlit secrets
+firebase_creds = st.secrets["firebase_service_account"]
 
-if not firebase_admin._apps:
-    cred = credentials.Certificate(SERVICE_ACCOUNT_PATH)
-    firebase_admin.initialize_app(cred, {"databaseURL": DATABASE_URL})
+# Convert the TOML secret into a dictionary
+cred_dict = {
+    "type": firebase_creds["type"],
+    "project_id": firebase_creds["project_id"],
+    "private_key_id": firebase_creds["private_key_id"],
+    "private_key": firebase_creds["private_key"],
+    "client_email": firebase_creds["client_email"],
+    "client_id": firebase_creds["client_id"],
+    "auth_uri": firebase_creds["auth_uri"],
+    "token_uri": firebase_creds["token_uri"],
+    "auth_provider_x509_cert_url": firebase_creds["auth_provider_x509_cert_url"],
+    "client_x509_cert_url": firebase_creds["client_x509_cert_url"],
+    "universe_domain": firebase_creds["universe_domain"]
+}
+
+# Initialize Firebase app with credentials
+cred = credentials.Certificate(cred_dict)
+DATABASE_URL = "https://lifealert-40baf-default-rtdb.firebaseio.com/"
+firebase_admin.initialize_app(cred, {"databaseURL": DATABASE_URL})
 
 sensor_ref = db.reference("sensorData")
 
