@@ -9,14 +9,26 @@ import time
 
 # **1️⃣ Streamlit Page Config**
 st.set_page_config(page_title="📊 Real-Time Sensor Dashboard", layout="wide")
+# Get Firebase credentials from Streamlit secrets
+firebase_config = st.secrets["firebase"]
 
-# Access secrets
-firebase_creds = st.secrets["firebase_service_account"]
-
+# Initialize Firebase Admin SDK with credentials from Streamlit secrets
 if not firebase_admin._apps:
-    cred = credentials.Certificate(firebase_creds)  # Access credentials directly
-    firebase_admin.initialize_app(cred, {"databaseURL": "https://lifealert-40baf-default-rtdb.firebaseio.com/"})
-
+    cred = credentials.Certificate({
+        "type": firebase_config["type"],
+        "project_id": firebase_config["project_id"],
+        "private_key_id": firebase_config["private_key_id"],
+        "private_key": firebase_config["private_key"],
+        "client_email": firebase_config["client_email"],
+        "client_id": firebase_config["client_id"],
+        "auth_uri": firebase_config["auth_uri"],
+        "token_uri": firebase_config["token_uri"],
+        "auth_provider_x509_cert_url": firebase_config["auth_provider_x509_cert_url"],
+        "client_x509_cert_url": firebase_config["client_x509_cert_url"],
+        "universe_domain": firebase_config["universe_domain"]
+    })
+    DATABASE_URL = "https://lifealert-40baf-default-rtdb.firebaseio.com/"
+    firebase_admin.initialize_app(cred, {"databaseURL": DATABASE_URL})
 sensor_ref = db.reference("sensorData")
 
 # **3️⃣ Data Storage (Rolling Window)**
@@ -54,7 +66,7 @@ for ax, title, color, marker, linestyle in zip(axes, titles, colors, markers, li
 chart_placeholder = st.empty()
 
 # **8️⃣ Discord Webhook Configuration**
-DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1337435754955276310/jXfMK5hSL2hFZeOWj1BYy7ylsIFnGhQTUDuE9zIRlXpWyfzjtzcGbRM7R_Jn_hjHDBt7"  # Replace with your actual webhook URL
+DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1336791999172313138/IbW-LUezfaqIEoihgNqRmwG0kwA_3l3jMvYvDJc_o5LBkWjqhfKxg8VaXSjksHj2Qfxw"  # Replace with your actual webhook URL
 last_emergency_status = False  # To track emergency changes and avoid duplicate alerts
 
 # **9️⃣ Function to Send Discord Alerts**
