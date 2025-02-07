@@ -1,3 +1,5 @@
+import json
+
 import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, db
@@ -28,8 +30,9 @@ cred_dict = {
     "universe_domain": firebase_creds["universe_domain"]
 }
 
+cred_json = json.dumps(cred_dict)
 # Initialize Firebase app with credentials
-cred = credentials.Certificate(cred_dict)
+cred = credentials.Certificate(json.loads(cred_json))  # Use the parsed JSON string as input
 DATABASE_URL = "https://lifealert-40baf-default-rtdb.firebaseio.com/"
 firebase_admin.initialize_app(cred, {"databaseURL": DATABASE_URL})
 
