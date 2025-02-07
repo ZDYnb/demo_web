@@ -10,13 +10,12 @@ import time
 # **1️⃣ Streamlit Page Config**
 st.set_page_config(page_title="📊 Real-Time Sensor Dashboard", layout="wide")
 
-# **2️⃣ Connect to Firebase**
-SERVICE_ACCOUNT_PATH = "lifealert-40baf-firebase-adminsdk-fbsvc-d247c8a09d.json"
-DATABASE_URL = "https://lifealert-40baf-default-rtdb.firebaseio.com/"
+# Access secrets
+firebase_creds = st.secrets["firebase_service_account"]
 
 if not firebase_admin._apps:
-    cred = credentials.Certificate(SERVICE_ACCOUNT_PATH)
-    firebase_admin.initialize_app(cred, {"databaseURL": DATABASE_URL})
+    cred = credentials.Certificate(firebase_creds)  # Access credentials directly
+    firebase_admin.initialize_app(cred, {"databaseURL": "https://lifealert-40baf-default-rtdb.firebaseio.com/"})
 
 sensor_ref = db.reference("sensorData")
 
