@@ -1,10 +1,9 @@
-
-
 import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, db
 import pandas as pd
 import matplotlib.pyplot as plt
+import requests
 from collections import deque
 import time
 
@@ -12,14 +11,13 @@ import time
 st.set_page_config(page_title="📊 Real-Time Sensor Dashboard", layout="wide")
 
 # **2️⃣ Connect to Firebase**
-# Access credentials from Streamlit secrets
-firebase_creds = st.secrets["firebase_service_account"]
-
-# Directly use the credentials dictionary from Streamlit secrets to initialize Firebase
-cred = credentials.Certificate(firebase_creds)
-
+SERVICE_ACCOUNT_PATH = "lifealert-40baf-firebase-adminsdk-fbsvc-d247c8a09d.json"
 DATABASE_URL = "https://lifealert-40baf-default-rtdb.firebaseio.com/"
-firebase_admin.initialize_app(cred, {"databaseURL": DATABASE_URL})
+
+if not firebase_admin._apps:
+    cred = credentials.Certificate(SERVICE_ACCOUNT_PATH)
+    firebase_admin.initialize_app(cred, {"databaseURL": DATABASE_URL})
+
 sensor_ref = db.reference("sensorData")
 
 # **3️⃣ Data Storage (Rolling Window)**
