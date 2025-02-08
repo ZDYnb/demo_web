@@ -7,31 +7,20 @@ import requests
 from collections import deque
 import time
 
-# **1️⃣ Streamlit Page Config**
-st.set_page_config(page_title="📊 Real-Time Sensor Dashboard", layout="wide")
-# Get Firebase credentials from Streamlit secrets
-firebase_config = st.secrets["firebase"]
+# Streamlit Page Config
+st.set_page_config(page_title=" Real-Time Sensor Dashboard", layout="wide")
 
-# Initialize Firebase Admin SDK with credentials from Streamlit secrets
+# Connect to Firebase
+SERVICE_ACCOUNT_PATH = "lifealert-40baf-firebase-adminsdk-fbsvc-5bdb920efa.json"
+DATABASE_URL = "https://lifealert-40baf-default-rtdb.firebaseio.com/"
+
 if not firebase_admin._apps:
-    cred = credentials.Certificate({
-        "type": firebase_config["type"],
-        "project_id": firebase_config["project_id"],
-        "private_key_id": firebase_config["private_key_id"],
-        "private_key": firebase_config["private_key"],
-        "client_email": firebase_config["client_email"],
-        "client_id": firebase_config["client_id"],
-        "auth_uri": firebase_config["auth_uri"],
-        "token_uri": firebase_config["token_uri"],
-        "auth_provider_x509_cert_url": firebase_config["auth_provider_x509_cert_url"],
-        "client_x509_cert_url": firebase_config["client_x509_cert_url"],
-        "universe_domain": firebase_config["universe_domain"]
-    })
-    DATABASE_URL = "https://lifealert-40baf-default-rtdb.firebaseio.com/"
+    cred = credentials.Certificate(SERVICE_ACCOUNT_PATH)
     firebase_admin.initialize_app(cred, {"databaseURL": DATABASE_URL})
+
 sensor_ref = db.reference("sensorData")
 
-# **3️⃣ Data Storage (Rolling Window)**
+# Data Storage (Rolling Window)
 WINDOW_SIZE = 50
 timestamps = deque(maxlen=WINDOW_SIZE)
 heart_rate = deque(maxlen=WINDOW_SIZE)
@@ -39,37 +28,37 @@ temperature = deque(maxlen=WINDOW_SIZE)
 acc_x, acc_y, acc_z = deque(maxlen=WINDOW_SIZE), deque(maxlen=WINDOW_SIZE), deque(maxlen=WINDOW_SIZE)
 gyro_x, gyro_y, gyro_z = deque(maxlen=WINDOW_SIZE), deque(maxlen=WINDOW_SIZE), deque(maxlen=WINDOW_SIZE)
 
-# **4️⃣ Centered Page Title**
-st.markdown("<h1 style='text-align: center;'>📡 Real-Time Sensor Monitoring Dashboard</h1>", unsafe_allow_html=True)
-st.markdown("<h4 style='text-align: center; color: orange;'>⚡ Data updates every second (smooth animations)</h4>", unsafe_allow_html=True)
+# Centered Page Title
+st.markdown("<h1 style='text-align: center;'> Real-Time Sensor Monitoring Dashboard</h1>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align: center; color: orange;'> Data updates every second (smooth animations)</h4>", unsafe_allow_html=True)
 
-# **5️⃣ Emergency & Location Status Placeholder**
+# Emergency & Location Status Placeholder
 status_placeholder = st.empty()
 
-# **6️⃣ Create 4 Subplots**
+# Create 4 Subplots
 fig, axes = plt.subplots(4, 1, figsize=(10, 5), sharex=True)
 
-# **Define Titles & Styles**
+# Define Titles & Styles
 titles = ["Heart Rate (BPM)", "Temperature (°C)", "Acceleration (m/s²)", "Gyroscope (rad/s)"]
 colors = ["purple", "green", "blue", "red"]
 markers = ["s", "^", "o", "D"]
 linestyles = ["-", "-", "--", "-."]
 
-# **Initialize Empty Plots**
+# Initialize Empty Plots
 for ax, title, color, marker, linestyle in zip(axes, titles, colors, markers, linestyles):
     ax.set_title(title, fontsize=14, fontweight="bold")
     ax.grid(True)
     ax.set_ylabel(title, fontsize=12)
     ax.plot([], [], linestyle=linestyle, marker=marker, color=color, label=title)
 
-# **7️⃣ Dynamic Update Section**
+# Dynamic Update Section
 chart_placeholder = st.empty()
 
-# **8️⃣ Discord Webhook Configuration**
+# Discord Webhook Configuration
 DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1336791999172313138/IbW-LUezfaqIEoihgNqRmwG0kwA_3l3jMvYvDJc_o5LBkWjqhfKxg8VaXSjksHj2Qfxw"  # Replace with your actual webhook URL
 last_emergency_status = False  # To track emergency changes and avoid duplicate alerts
 
-# **9️⃣ Function to Send Discord Alerts**
+# Function to Send Discord Alerts
 def send_discord_alert(data):
     """ Sends an emergency alert to Discord """
     message = {
@@ -90,7 +79,7 @@ def send_discord_alert(data):
     else:
         print(f"⚠️ Failed to send alert: {response.status_code}")
 
-# **🔟 Function to Update Data**
+#  Function to Update Data
 def update_data():
     global timestamps, heart_rate, temperature, acc_x, acc_y, acc_z, gyro_x, gyro_y, gyro_z, last_emergency_status
 
@@ -174,7 +163,7 @@ def update_data():
 
     chart_placeholder.pyplot(fig, clear_figure=False)
 
-# **🔟 Start Real-Time Updates**
+#  Start Real-Time Updates
 while True:
     update_data()
     time.sleep(1)
