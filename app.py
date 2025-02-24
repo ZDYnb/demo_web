@@ -153,7 +153,7 @@ def update_data():
     axes[0].set_xticks(range(len(timestamps)))  # 设置 X 轴刻度
     axes[0].set_xticklabels(timestamps, rotation=45)  # 旋转时间轴
     axes[0].legend()
-    axes[0].text(len(timestamps) - 1, heart_rate[-1], f"{heart_rate[-1]:.1f} BPM",
+    axes[0].text(len(timestamps) - 1 + 5, heart_rate[-1], f"{heart_rate[-1]:.1f} BPM",
                  fontsize=12, color="purple", ha="left", va="center", fontweight="bold")
 
     # **(Temperature)**
@@ -162,7 +162,7 @@ def update_data():
     axes[1].set_xticks(range(len(timestamps)))
     axes[1].set_xticklabels(timestamps, rotation=45)
     axes[1].legend()
-    axes[1].text(len(timestamps) - 1, temperature[-1], f"{temperature[-1]:.1f} °C",
+    axes[1].text(len(timestamps) - 1 + 5, temperature[-1], f"{temperature[-1]:.1f} °C",
                  fontsize=12, color="green", ha="left", va="center", fontweight="bold")
     # **(Total Acceleration)**
     axes[2].clear()
@@ -170,7 +170,7 @@ def update_data():
     axes[2].set_xticks(range(len(timestamps)))
     axes[2].set_xticklabels(timestamps, rotation=45)
     axes[2].legend()
-    axes[2].text(len(timestamps) - 1, acc_x[-1], f"{acc_x[-1]:.2f} m/s²",
+    axes[2].text(len(timestamps) - 1 + 5, acc_x[-1], f"{acc_x[-1]:.2f} m/s²",
                  fontsize=12, color="red", ha="left", va="center", fontweight="bold")
     # **(Total Gyroscope)**
     axes[3].clear()
@@ -178,7 +178,7 @@ def update_data():
     axes[3].set_xticks(range(len(timestamps)))
     axes[3].set_xticklabels(timestamps, rotation=45)
     axes[3].legend()
-    axes[3].text(len(timestamps) - 1, gyro_x[-1], f"{gyro_x[-1]:.2f} rad/s",
+    axes[3].text(len(timestamps) - 1 + 5, gyro_x[-1], f"{gyro_x[-1]:.2f} rad/s",
                  fontsize=12, color="blue", ha="left", va="center", fontweight="bold")
 
     chart_placeholder.pyplot(fig, clear_figure=False)
