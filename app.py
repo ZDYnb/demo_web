@@ -8,26 +8,30 @@ from collections import deque
 import time
 
 
-# read Streamlit Secrets
+
+# 读取 Firebase Secrets
 firebase_secrets = st.secrets["firebase"]
 
-# Firebase
+# 解析 private_key 的换行符，确保 JSON 格式正确
+firebase_secrets_dict = {
+    "type": firebase_secrets["type"],
+    "project_id": firebase_secrets["project_id"],
+    "private_key_id": firebase_secrets["private_key_id"],
+    "private_key": firebase_secrets["private_key"].replace("\\n", "\n"),  # 处理换行符
+    "client_email": firebase_secrets["client_email"],
+    "client_id": firebase_secrets["client_id"],
+    "auth_uri": firebase_secrets["auth_uri"],
+    "token_uri": firebase_secrets["token_uri"],
+    "auth_provider_x509_cert_url": firebase_secrets["auth_provider_x509_cert_url"],
+    "client_x509_cert_url": firebase_secrets["client_x509_cert_url"],
+}
+
+# 初始化 Firebase
 if not firebase_admin._apps:
-    cred = credentials.Certificate({
-        "type": firebase_secrets["type"],
-        "project_id": firebase_secrets["project_id"],
-        "private_key_id": firebase_secrets["private_key_id"],
-        "private_key": firebase_secrets["private_key"].replace("\\n", "\n"),
-        "client_email": firebase_secrets["client_email"],
-        "client_id": firebase_secrets["client_id"],
-        "auth_uri": firebase_secrets["auth_uri"],
-        "token_uri": firebase_secrets["token_uri"],
-        "auth_provider_x509_cert_url": firebase_secrets["auth_provider_x509_cert_url"],
-        "client_x509_cert_url": firebase_secrets["client_x509_cert_url"],
-    })
+    cred = credentials.Certificate(firebase_secrets_dict)  # 直接传 JSON 字典
     firebase_admin.initialize_app(cred, {"databaseURL": firebase_secrets["database_url"]})
 
-
+# 连接 Firebase 数据库
 sensor_ref = db.reference("sensorData")
 
 # Data Storage (Rolling Window)
