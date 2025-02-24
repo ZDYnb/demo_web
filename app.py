@@ -31,7 +31,7 @@ if not firebase_admin._apps:
 sensor_ref = db.reference("sensorData")
 
 # Data Storage (Rolling Window)
-WINDOW_SIZE = 50
+WINDOW_SIZE = 30
 timestamps = deque(maxlen=WINDOW_SIZE)
 heart_rate = deque(maxlen=WINDOW_SIZE)
 temperature = deque(maxlen=WINDOW_SIZE)
