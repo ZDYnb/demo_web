@@ -1,3 +1,5 @@
+import os
+
 import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, db
@@ -6,7 +8,7 @@ import matplotlib.pyplot as plt
 import requests
 from collections import deque
 import time
-
+import json
 
 
 # 读取 Firebase Secrets
@@ -27,9 +29,17 @@ firebase_secrets_dict = {
     "universe_domain": "googleapis.com"
 }
 
-# 初始化 Firebase
+# 🔥 创建一个临时 JSON 文件
+json_path = "/tmp/firebase_credentials.json"  # Linux/macOS
+if os.name == "nt":
+    json_path = "C:\\Windows\\Temp\\firebase_credentials.json"  # Windows
+
+with open(json_path, "w") as json_file:
+    json.dump(firebase_secrets_dict, json_file)
+
+# ✅ 让 Firebase 读取这个 JSON 文件
 if not firebase_admin._apps:
-    cred = credentials.Certificate(dict(firebase_secrets_dict))  # 直接传 JSON 字典
+    cred = credentials.Certificate(json_path)  # 读取 JSON 文件
     firebase_admin.initialize_app(cred, {"databaseURL": firebase_secrets["database_url"]})
 
 # 连接 Firebase 数据库
