@@ -3,4 +3,3 @@ firebase-admin
 pandas
 matplotlib
 requests
-json
