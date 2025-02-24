@@ -17,7 +17,7 @@ firebase_secrets_dict = {
     "type": firebase_secrets["type"],
     "project_id": firebase_secrets["project_id"],
     "private_key_id": firebase_secrets["private_key_id"],
-    "private_key": firebase_secrets["private_key"].replace("\\n", "\n"),  # 处理换行符
+    "private_key": firebase_secrets["private_key"],  # 处理换行符
     "client_email": firebase_secrets["client_email"],
     "client_id": firebase_secrets["client_id"],
     "auth_uri": firebase_secrets["auth_uri"],
@@ -29,7 +29,7 @@ firebase_secrets_dict = {
 
 # 初始化 Firebase
 if not firebase_admin._apps:
-    cred = credentials.Certificate(firebase_secrets_dict)  # 直接传 JSON 字典
+    cred = credentials.Certificate(dict(firebase_secrets_dict))  # 直接传 JSON 字典
     firebase_admin.initialize_app(cred, {"databaseURL": firebase_secrets["database_url"]})
 
 # 连接 Firebase 数据库
