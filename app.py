@@ -117,26 +117,25 @@ def update_data():
         })
 
     df = pd.DataFrame(records).sort_values(by="timestamp")
-    df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms")
+    df["timestamp"] = pd.to_datetime(df["timestamp"], format="%Y-%m-%d %H:%M:%S")
+    df["time_only"] = df["timestamp"].dt.strftime("%H:%M:%S")
 
     if not df.empty:
-        latest_time = df["timestamp"].iloc[-1]
+        latest_time = df["time_only"].iloc[-1]
         timestamps.append(latest_time)
         heart_rate.append(df["heart_rate"].iloc[-1])
         temperature.append(df["temperature"].iloc[-1])
-        acc_x.append(df["acc_x"].iloc[-1])
-        acc_y.append(df["acc_y"].iloc[-1])
-        acc_z.append(df["acc_z"].iloc[-1])
-        gyro_x.append(df["gyro_x"].iloc[-1])
-        gyro_y.append(df["gyro_y"].iloc[-1])
-        gyro_z.append(df["gyro_z"].iloc[-1])
+
+        acc_x.append(df["totalAcc"].iloc[-1])
+        gyro_x.append(df["totalGyro"].iloc[-1])
 
         # **Update Emergency & Location Status**
         latest_lat = df["lat"].iloc[-1] if not df["lat"].isna().all() else "N/A"
         latest_lng = df["lng"].iloc[-1] if not df["lng"].isna().all() else "N/A"
         emergency_status = df["emergency"].iloc[-1]
+        fall_status = df["fall_detect"].iloc[-1]
 
-        emergency_text = "🚨 **Emergency Alert!**" if emergency_status else "✅ **Normal Status**"
+        emergency_text = "🚨 **Emergency Alert!**" if emergency_status or fall_status else "✅ **Normal Status**"
         status_placeholder.subheader(f"{emergency_text} | 🌍 Location: ({latest_lat}, {latest_lng})")
 
         # **Trigger Discord Alert if Emergency**
@@ -151,24 +150,32 @@ def update_data():
         last_emergency_status = emergency_status  # Update the last known emergency status
 
     # **Update Plots**
+    # **(Heart Rate)**
     axes[0].clear()
     axes[0].plot(timestamps, heart_rate, linestyle="-", marker="s", color="purple", label="Avg BPM")
+    axes[0].set_xticks(range(len(timestamps)))  # 设置 X 轴刻度
+    axes[0].set_xticklabels(timestamps, rotation=45)  # 旋转时间轴
     axes[0].legend()
 
+    # **(Temperature)**
     axes[1].clear()
     axes[1].plot(timestamps, temperature, linestyle="-", marker="^", color="green", label="Temperature (°C)")
+    axes[1].set_xticks(range(len(timestamps)))
+    axes[1].set_xticklabels(timestamps, rotation=45)
     axes[1].legend()
 
+    # **(Total Acceleration)**
     axes[2].clear()
-    axes[2].plot(timestamps, acc_x, linestyle="--", marker="o", color="red", label="Acc X")
-    axes[2].plot(timestamps, acc_y, linestyle="--", marker="o", color="blue", label="Acc Y")
-    axes[2].plot(timestamps, acc_z, linestyle="--", marker="o", color="green", label="Acc Z")
+    axes[2].plot(timestamps, acc_x, linestyle="--", marker="o", color="red", label="Total Acceleration (m/s²)")
+    axes[2].set_xticks(range(len(timestamps)))
+    axes[2].set_xticklabels(timestamps, rotation=45)
     axes[2].legend()
 
+    # **(Total Gyroscope)**
     axes[3].clear()
-    axes[3].plot(timestamps, gyro_x, linestyle="-.", marker="D", color="red", label="Gyro X")
-    axes[3].plot(timestamps, gyro_y, linestyle="-.", marker="D", color="blue", label="Gyro Y")
-    axes[3].plot(timestamps, gyro_z, linestyle="-.", marker="D", color="green", label="Gyro Z")
+    axes[3].plot(timestamps, gyro_x, linestyle="-.", marker="D", color="blue", label="Total Gyroscope (rad/s)")
+    axes[3].set_xticks(range(len(timestamps)))
+    axes[3].set_xticklabels(timestamps, rotation=45)
     axes[3].legend()
 
     chart_placeholder.pyplot(fig, clear_figure=False)
