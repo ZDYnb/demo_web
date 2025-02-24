@@ -30,9 +30,9 @@ firebase_secrets_dict = {
 }
 
 # 🔥 创建一个临时 JSON 文件
-json_path = "/tmp/firebase_credentials.json"  # Linux/macOS
+json_path = "/tmp/lifealert-40baf-firebase-adminsdk-fbsvc-5bdb920efa.json"  # Linux/macOS
 if os.name == "nt":
-    json_path = "C:\\Windows\\Temp\\firebase_credentials.json"  # Windows
+    json_path = "C:\\Windows\\Temp\\lifealert-40baf-firebase-adminsdk-fbsvc-5bdb920efa.json"  # Windows
 
 with open(json_path, "w") as json_file:
     json.dump(firebase_secrets_dict, json_file)
