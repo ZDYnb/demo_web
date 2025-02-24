@@ -24,7 +24,7 @@ firebase_secrets_dict = {
     "token_uri": firebase_secrets["token_uri"],
     "auth_provider_x509_cert_url": firebase_secrets["auth_provider_x509_cert_url"],
     "client_x509_cert_url": firebase_secrets["client_x509_cert_url"],
-    "universe_domain": firebase_secrets["googleapis.com"]
+    "universe_domain": "googleapis.com"
 }
 
 # 初始化 Firebase
