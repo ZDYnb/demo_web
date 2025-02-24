@@ -11,38 +11,23 @@ import time
 import json
 
 
-# 读取 Firebase Secrets
+
 firebase_secrets = st.secrets["firebase"]
+firebase_secrets_dict = json.loads(json.dumps(dict(firebase_secrets)))
 
-# 解析 private_key 的换行符，确保 JSON 格式正确
-firebase_secrets_dict = {
-    "type": firebase_secrets["type"],
-    "project_id": firebase_secrets["project_id"],
-    "private_key_id": firebase_secrets["private_key_id"],
-    "private_key": firebase_secrets["private_key"],  # 处理换行符
-    "client_email": firebase_secrets["client_email"],
-    "client_id": firebase_secrets["client_id"],
-    "auth_uri": firebase_secrets["auth_uri"],
-    "token_uri": firebase_secrets["token_uri"],
-    "auth_provider_x509_cert_url": firebase_secrets["auth_provider_x509_cert_url"],
-    "client_x509_cert_url": firebase_secrets["client_x509_cert_url"],
-    "universe_domain": "googleapis.com"
-}
-
-# 🔥 创建一个临时 JSON 文件
 json_path = "/tmp/lifealert-40baf-firebase-adminsdk-fbsvc-5bdb920efa.json"  # Linux/macOS
 if os.name == "nt":
     json_path = "C:\\Windows\\Temp\\lifealert-40baf-firebase-adminsdk-fbsvc-5bdb920efa.json"  # Windows
 
 with open(json_path, "w") as json_file:
-    json.dump(firebase_secrets_dict, json_file)
+    json.dump(firebase_secrets_dict, json_file, indent=4)  # `indent=4`
 
-# ✅ 让 Firebase 读取这个 JSON 文件
+# read
 if not firebase_admin._apps:
-    cred = credentials.Certificate(json_path)  # 读取 JSON 文件
+    cred = credentials.Certificate(json_path)
     firebase_admin.initialize_app(cred, {"databaseURL": firebase_secrets["database_url"]})
 
-# 连接 Firebase 数据库
+#
 sensor_ref = db.reference("sensorData")
 
 # Data Storage (Rolling Window)
